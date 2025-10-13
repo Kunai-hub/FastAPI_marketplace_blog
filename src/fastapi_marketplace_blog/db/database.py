@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 from src.fastapi_marketplace_blog.core.config import config
 
@@ -8,5 +8,8 @@ async_session = async_sessionmaker(async_engine, expire_on_commit=False)
 
 
 async def get_db():
-    async with async_session() as session:
+    session: AsyncSession = async_session()
+    try:
         yield session
+    finally:
+        await session.close()
