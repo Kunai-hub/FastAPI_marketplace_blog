@@ -15,10 +15,10 @@ class AuthRepository:
         async with self.session.begin():
             query = select(User).where(User.email == email)
             result = await self.session.execute(statement=query)
-            user_row = result.fetchone()
+            user_row = result.scalars().first()
 
             if user_row:
-                return user_row[0]
+                return user_row
 
     async def authenticate_user(self, email: str, password: str) -> Union[User, None]:
         user = await self.get_user_by_email_for_auth(email=email)

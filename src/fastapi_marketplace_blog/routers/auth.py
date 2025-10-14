@@ -25,9 +25,16 @@ async def register(body: UserCreate, db=Depends(get_db)) -> UserResponse:
         return UserResponse(
             id=user.id,
             email=user.email,
+            is_active=user.is_active,
             created_at=user.created_at,
         )
     except IntegrityError as e:
+        e = str(e)
+        if "duplicate key value violates unique constraint" in e:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Email already exists",
+            )
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database error: {e}",
@@ -35,11 +42,9 @@ async def register(body: UserCreate, db=Depends(get_db)) -> UserResponse:
 
 
 @auth_router.post("/login")
-async def login(response: Response, form_data: UserCreate, db=Depends(get_db)):
+async def login(response: Response, body: UserCreate, db=Depends(get_db)):
     repo = AuthRepository(session=db)
-    user = await repo.authenticate_user(
-        email=form_data.email, password=form_data.password
-    )
+    user = await repo.authenticate_user(email=body.email, password=body.password)
 
     if not user:
         raise HTTPException(

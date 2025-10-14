@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr
 
@@ -13,4 +14,17 @@ class UserCreate(BaseModel):
 class UserResponse(TunedModel):
     id: int
     email: EmailStr
+    is_active: bool
+    created_at: datetime
+
+
+class CategoryCreate(BaseModel):
+    name: str
+    slug: Optional[str] = None
+
+
+class CategoryResponse(TunedModel):
+    id: int
+    name: str
+    slug: str
     created_at: datetime
