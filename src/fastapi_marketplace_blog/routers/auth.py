@@ -28,13 +28,13 @@ async def register(body: UserCreate, db=Depends(get_db)) -> UserResponse:
             is_active=user.is_active,
             created_at=user.created_at,
         )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(e),
+        )
     except IntegrityError as e:
         e = str(e)
-        if "duplicate key value violates unique constraint" in e:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="Email already exists",
-            )
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database error: {e}",

@@ -16,13 +16,7 @@ category_router = APIRouter(prefix="/categories", tags=["categories"])
 async def create_category(
     request: Request, body: CategoryCreate, db=Depends(get_db)
 ) -> CategoryResponse:
-    # if not getattr(request.state, "user", None):
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED,
-    #         detail="Unauthorized"
-    #     )
-    # TODO проверка на юзера
-    if not request.cookies["access_token"]:
+    if not getattr(request.state, "user", None):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized"
         )
@@ -38,10 +32,15 @@ async def create_category(
             slug=category.slug,
             created_at=category.created_at,
         )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(e),
+        )
     except IntegrityError as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database error: {e}",
+            detail=f"Database error: {str(e)}",
         )
 
 

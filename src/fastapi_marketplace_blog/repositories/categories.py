@@ -1,6 +1,6 @@
 from typing import Optional, Sequence, Union
 
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.fastapi_marketplace_blog.db.models import Category
@@ -12,6 +12,17 @@ class CategoryRepository:
 
     async def create_category(self, name: str, slug: Optional[str] = None) -> Category:
         async with self.session.begin():
+            if slug:
+                query = select(Category).where(
+                    or_(Category.slug == slug, Category.name == name)
+                )
+                existing = await self.session.execute(statement=query)
+            else:
+                query = select(Category).where(Category.name == name)
+                existing = await self.session.execute(statement=query)
+
+            if existing.scalar_one_or_none():
+                raise ValueError("Category already exists")
             new_category = Category(
                 name=name,
                 slug=slug,
