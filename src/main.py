@@ -10,11 +10,12 @@ from src.fastapi_marketplace_blog.routers.auth import (
     REFRESH_COOKIE,
 )
 from src.fastapi_marketplace_blog.routers.category import category_router
+from src.fastapi_marketplace_blog.routers.post import post_router
 from src.fastapi_marketplace_blog.services.access_token_creater import (
     decode_token,
     create_access_token,
 )
-from src.fastapi_marketplace_blog.repositories.auth import AuthRepository
+from src.fastapi_marketplace_blog.repositories.auths import AuthRepository
 
 PUBLIC_PATHS = ["/auth", "/docs", "/redoc", "/openapi.json"]
 
@@ -115,5 +116,6 @@ def get_app() -> FastAPI:
 
     app.include_router(auth_router)
     app.include_router(category_router)
+    app.include_router(post_router)
 
     return app

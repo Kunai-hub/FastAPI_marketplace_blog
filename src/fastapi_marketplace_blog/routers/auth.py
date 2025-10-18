@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from src.fastapi_marketplace_blog.schemas.schemas import UserResponse, UserCreate
 from src.fastapi_marketplace_blog.db.database import get_db
 from src.fastapi_marketplace_blog.repositories.users import UserRepository
-from src.fastapi_marketplace_blog.repositories.auth import AuthRepository
+from src.fastapi_marketplace_blog.repositories.auths import AuthRepository
 from src.fastapi_marketplace_blog.services.access_token_creater import (
     create_access_token,
 )

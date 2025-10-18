@@ -17,8 +17,7 @@ class AuthRepository:
             result = await self.session.execute(statement=query)
             user_row = result.scalars().first()
 
-            if user_row:
-                return user_row
+            return user_row
 
     async def authenticate_user(self, email: str, password: str) -> Union[User, None]:
         user = await self.get_user_by_email_for_auth(email=email)

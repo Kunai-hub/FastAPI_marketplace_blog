@@ -28,3 +28,20 @@ class CategoryResponse(TunedModel):
     name: str
     slug: str
     created_at: datetime
+
+
+class PostCreate(BaseModel):
+    title: str
+    text: str
+    category_id: int
+    image: Optional[str] = None
+
+
+class PostResponse(TunedModel):
+    id: int
+    title: str
+    text: str
+    category: CategoryResponse
+    image: Optional[str]
+    created_at: datetime
+    updated_at: datetime
