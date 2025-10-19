@@ -46,7 +46,7 @@ class Post(Base):
         DateTime(timezone=True),
         nullable=False,
         server_default=func.current_timestamp(),
-        server_onupdate=func.current_timestamp(),
+        onupdate=func.current_timestamp(),
     )
     tsv = Column(TSVECTOR)
     category = relationship("Category")

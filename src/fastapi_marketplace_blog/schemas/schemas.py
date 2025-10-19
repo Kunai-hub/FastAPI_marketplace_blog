@@ -45,3 +45,10 @@ class PostResponse(TunedModel):
     image: Optional[str]
     created_at: datetime
     updated_at: datetime
+
+
+class PostUpdate(BaseModel):
+    title: Optional[str] = None
+    text: Optional[str] = None
+    category_id: Optional[int] = None
+    image: Optional[str] = None

@@ -4,7 +4,8 @@ from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.fastapi_marketplace_blog.db.models import Post
+from src.fastapi_marketplace_blog.db.models import Post, PostArchive
+from src.fastapi_marketplace_blog.schemas.schemas import PostUpdate
 
 
 class PostRepository:
@@ -55,3 +56,50 @@ class PostRepository:
             posts = result.scalars().all()
 
             return posts
+
+    async def update_post(self, post_id: int, data: PostUpdate) -> Post:
+        async with self.session.begin():
+            post = await self.session.get(Post, post_id)
+
+            if not post:
+                raise ValueError("Post not found")
+            post.title = data.title or post.title
+            post.text = data.text or post.text
+            post.category_id = data.category_id or post.category_id
+            post.image = data.image or post.image
+            self.session.add(post)
+            await self.session.flush()
+            query = (
+                select(Post)
+                .options(selectinload(Post.category))
+                .where(Post.id == post.id)
+            )
+            result = await self.session.execute(statement=query)
+
+            return result.scalar_one()
+
+    async def delete_post(self, post_id: int) -> Post:
+        async with self.session.begin():
+            post = await self.session.get(Post, post_id)
+
+            if not post:
+                raise ValueError("Post not found")
+            post_archive = PostArchive(
+                title=post.title,
+                text=post.text,
+                category_id=post.category_id,
+                image=post.image,
+                created_at=post.created_at,
+                updated_at=post.updated_at,
+            )
+            self.session.add(post_archive)
+            await self.session.flush()
+            query = (
+                select(Post)
+                .options(selectinload(Post.category))
+                .where(Post.id == post.id)
+            )
+            result = await self.session.execute(statement=query)
+            await self.session.delete(post)
+
+            return result.scalar_one()
