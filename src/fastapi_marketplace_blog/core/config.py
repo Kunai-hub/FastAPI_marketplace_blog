@@ -8,10 +8,21 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: int
 
+    WEB_PORT: int
+
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     REFRESH_TOKEN_EXPIRE_DAYS: int
     JWT_SECRET: str
     JWT_ALGORITHM: str
+
+    RABBITMQ_USER: str
+    RABBITMQ_PASSWORD: str
+    RABBITMQ_PORT: int
+
+    SMTP_HOST: str
+    SMTP_PORT: int
+    EMAIL_FROM: str
+    EMAIL_PASSWORD: str
 
     class Config:
         env_file = ".env"

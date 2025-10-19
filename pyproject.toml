@@ -5,6 +5,7 @@ description = "A FastAPI service for marketplace blog."
 authors = [
     {name = "kunai",email = "neni23@mail.ru"}
 ]
+packages = [{ include = "fastapi_marketplace_blog", from = "src" }]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -20,6 +21,7 @@ dependencies = [
     "greenlet (>=3.2.4,<4.0.0)",
     "argon2-cffi (>=25.1.0,<26.0.0)",
     "python-jose (>=3.5.0,<4.0.0)",
+    "celery (>=5.5.3,<6.0.0)",
 ]
 
 

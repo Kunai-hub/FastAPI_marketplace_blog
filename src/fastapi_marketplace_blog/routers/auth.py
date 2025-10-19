@@ -22,6 +22,10 @@ async def register(body: UserCreate, db=Depends(get_db)) -> UserResponse:
         repo = UserRepository(session=db)
         user = await repo.create_user(email=body.email, password=body.password)
 
+        from src.fastapi_marketplace_blog.workers.tasks import send_mail
+
+        send_mail.delay(email=user.email, username=user.email.split("@")[0])
+
         return UserResponse(
             id=user.id,
             email=user.email,

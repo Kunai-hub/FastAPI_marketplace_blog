@@ -18,5 +18,43 @@ services:
       timeout: 5s
       retries: 5
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbit-mq
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+
+  backend:
+    build: .
+    image: backend
+    container_name: backend
+    env_file:
+      - .env
+    ports:
+      - "${WEB_PORT}:8000"
+    volumes:
+      - ./:/app
+    command: ./entrypoint.sh uvicorn src.asgi:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - db
+      - rabbitmq
+
+  worker:
+    build: .
+    image: worker
+    container_name: worker
+    env_file:
+      - .env
+    command: celery -A src.fastapi_marketplace_blog.workers.tasks.celery worker --loglevel=info
+    depends_on:
+      - db
+      - rabbitmq
+
+
 volumes:
   db_data:
