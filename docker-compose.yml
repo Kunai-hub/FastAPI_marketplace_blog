@@ -29,6 +29,20 @@ services:
     ports:
       - "${RABBITMQ_PORT}:5672"
 
+  minio:
+    image: minio/minio
+    container_name: minio
+    env_file:
+      - .env
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET}
+    ports:
+      - "${S3_PORT}:9000"
+    volumes:
+      - minio_data:/data
+    command: ["server", "/data"]
+
   backend:
     build: .
     image: backend
@@ -43,6 +57,7 @@ services:
     depends_on:
       - db
       - rabbitmq
+      - minio
 
   worker:
     build: .
@@ -52,9 +67,10 @@ services:
       - .env
     command: celery -A src.fastapi_marketplace_blog.workers.tasks.celery worker --loglevel=info
     depends_on:
-      - db
+      - backend
       - rabbitmq
 
 
 volumes:
   db_data:
+  minio_data:

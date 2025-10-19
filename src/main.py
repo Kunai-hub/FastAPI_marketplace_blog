@@ -11,6 +11,7 @@ from src.fastapi_marketplace_blog.routers.auth import (
 )
 from src.fastapi_marketplace_blog.routers.category import category_router
 from src.fastapi_marketplace_blog.routers.post import post_router
+from src.fastapi_marketplace_blog.routers.image import image_router
 from src.fastapi_marketplace_blog.services.access_token_creater import (
     decode_token,
     create_access_token,
@@ -117,5 +118,6 @@ def get_app() -> FastAPI:
     app.include_router(auth_router)
     app.include_router(category_router)
     app.include_router(post_router)
+    app.include_router(image_router)
 
     return app

@@ -24,6 +24,13 @@ class Settings(BaseSettings):
     EMAIL_FROM: str
     EMAIL_PASSWORD: str
 
+    S3_ENDPOINT: str
+    S3_REGION: str
+    S3_ACCESS: str
+    S3_SECRET: str
+    S3_BUCKET: str
+    S3_PORT: int
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
