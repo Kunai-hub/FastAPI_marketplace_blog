@@ -7,7 +7,7 @@ async def test_categories_create_success(client):
         "/auth/register", json={"email": "cat@user.ru", "password": "cat123"}
     )
     r = await client.post(
-        "auth/login", json={"email": "cat@user.ru", "password": "cat123"}
+        "/auth/login", json={"email": "cat@user.ru", "password": "cat123"}
     )
     assert r.status_code == 200
 
@@ -25,7 +25,7 @@ async def test_categories_create_with_some_slug(client):
         "/auth/register", json={"email": "cat@user.ru", "password": "cat123"}
     )
     r = await client.post(
-        "auth/login", json={"email": "cat@user.ru", "password": "cat123"}
+        "/auth/login", json={"email": "cat@user.ru", "password": "cat123"}
     )
     assert r.status_code == 200
 
@@ -45,7 +45,7 @@ async def test_categories_get_list(client):
         "/auth/register", json={"email": "cat@user.ru", "password": "cat123"}
     )
     r = await client.post(
-        "auth/login", json={"email": "cat@user.ru", "password": "cat123"}
+        "/auth/login", json={"email": "cat@user.ru", "password": "cat123"}
     )
     assert r.status_code == 200
 

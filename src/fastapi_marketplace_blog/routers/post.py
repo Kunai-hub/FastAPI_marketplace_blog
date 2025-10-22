@@ -47,6 +47,11 @@ async def create_post(
             created_at=post.created_at,
             updated_at=post.updated_at,
         )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
     except IntegrityError as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

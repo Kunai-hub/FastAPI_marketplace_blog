@@ -4,7 +4,7 @@ from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.fastapi_marketplace_blog.db.models import Post, PostArchive
+from src.fastapi_marketplace_blog.db.models import Post, PostArchive, Category
 from src.fastapi_marketplace_blog.schemas.schemas import PostUpdate
 
 
@@ -16,6 +16,10 @@ class PostRepository:
         self, title: str, text: str, category_id: int, image: Optional[str] = None
     ) -> Post:
         async with self.session.begin():
+            cat = await self.session.get(Category, category_id)
+
+            if not cat:
+                raise ValueError("Category does not exist")
             new_post = Post(
                 title=title,
                 text=text,
