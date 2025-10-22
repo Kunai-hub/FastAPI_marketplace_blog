@@ -38,5 +38,4 @@ class CategoryRepository:
             result = await self.session.execute(statement=query)
             categories = result.scalars().all()
 
-            if categories:
-                return categories
+            return categories
