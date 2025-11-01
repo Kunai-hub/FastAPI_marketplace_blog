@@ -1,0 +1,76 @@
+services:
+  db:
+    image: postgres:15
+    container_name: db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbit-mq
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    env_file:
+      - .env
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET}
+    ports:
+      - "${S3_PORT}:9000"
+    volumes:
+      - minio_data:/data
+    command: ["server", "/data"]
+
+  backend:
+    build: .
+    image: backend
+    container_name: backend
+    env_file:
+      - .env
+    ports:
+      - "${WEB_PORT}:8000"
+    volumes:
+      - ./:/app
+    command: ./entrypoint.sh uvicorn src.asgi:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - db
+      - rabbitmq
+      - minio
+
+  worker:
+    build: .
+    image: worker
+    container_name: worker
+    env_file:
+      - .env
+    command: celery -A src.fastapi_marketplace_blog.workers.tasks.celery worker --loglevel=info
+    depends_on:
+      - backend
+      - rabbitmq
+
+
+volumes:
+  db_data:
+  minio_data:
